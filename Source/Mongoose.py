@@ -1,4 +1,5 @@
 from tkinter import *
+from serial.tools.list_ports import comports
 import sys
 import os
 import threading
@@ -6,6 +7,7 @@ import time
 import socket
 import serial
 import logging
+import serial
 
 class SerialManager:
     def __init__(self):
@@ -26,14 +28,28 @@ class MainApp:
         self.button = Button(frame, text="QUIT", fg="red", command=self.quit)
         self.button.grid(row=0)
 
-        self.hi_there = Button(frame, text="Hello", command=self.say_hi)
-        self.hi_there.grid(row=0, column=1)
+        self.openCom = Button(frame, text="Connect", command=self.openCom)
+        self.openCom.grid(row=0, column=1)
         
         
 
         self.textBox = Entry(master,text = "Hello")
         self.textBox.grid(row=1,sticky = W)
 
+        self.comList = Listbox(master)
+        self.comList.grid(row = 0, column=2)
+        self.comList.insert(END, "COM9")
+
+        portList = comports()
+        for com,desc,hwid in portList:
+            print("Found COM port:",com, "\n")
+            self.comList.insert(0, com)  
+        
+    def openCom(self):
+        curSelect = self.comList.curselection()
+        try:
+            item = self.comList.get(curSelect)
+        except ValueErroe: pass
         
         self.ser.port = "COM9"
         self.ser.baudrate = int(9600)
@@ -44,12 +60,9 @@ class MainApp:
         except serial.SerialException as e:
             logging.error("Could not open serial port %s: %s" % (self.ser.portstr, e))
             sys.exit(1)
-        logging.info("Serving serial port: %s" % (self.ser.portstr,))
-        
-        #ser.close()
-
-    def say_hi(self):
-        self.ser.write(str.encode("Hello world\r\n",'ascii'))
+        logging.info("Serving serial port: %s" % (self.ser.portstr,))                        
+        self.ser.write(str.encode("Connected to " + self.ser.port + "\r\n",'ascii'))
+        self.openCom.config(text = "Disconnect")
     def quit(self):
         self.frame.quit()
 

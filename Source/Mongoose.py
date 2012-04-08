@@ -46,8 +46,8 @@ except serial.SerialException as e:
     sys.exit(1)
 logging.info("Serving serial port: %s" % (ser.portstr,))
 output = "Hello world!"
-ser.write(str.encode("Hello world",'ascii'))
-ser.flush()
+ser.write(str.encode("Hello world\r\n",'ascii'))
+#ser.flush()
 #ser.write(0(0x3x30)
 #ser.write(0x30)
 ser.close()

@@ -46,23 +46,27 @@ class MainApp:
             self.comList.insert(0, com)  
         
     def openCom(self):
-        curSelect = self.comList.curselection()
-        try:
-            item = self.comList.get(curSelect)
-        except ValueErroe: pass
+        if(self.openCom.cget("text") == "Connect"):
+            curSelect = self.comList.curselection()
+            try:
+                item = self.comList.get(curSelect)
+            except ValueErroe: pass
         
-        self.ser.port = "COM9"
-        self.ser.baudrate = int(9600)
-        self.ser.timeout = 1
+            self.ser.port = item
+            self.ser.baudrate = int(9600)
+            self.ser.timeout = 1
 
-        try:
-            self.ser.open()
-        except serial.SerialException as e:
-            logging.error("Could not open serial port %s: %s" % (self.ser.portstr, e))
-            sys.exit(1)
-        logging.info("Serving serial port: %s" % (self.ser.portstr,))                        
-        self.ser.write(str.encode("Connected to " + self.ser.port + "\r\n",'ascii'))
-        self.openCom.config(text = "Disconnect")
+            try:
+                self.ser.open()
+            except serial.SerialException as e:
+                logging.error("Could not open serial port %s: %s" % (self.ser.portstr, e))
+                sys.exit(1)
+            logging.info("Serving serial port: %s" % (self.ser.portstr,))                        
+            self.ser.write(str.encode("Connected to " + self.ser.port + "\r\n",'ascii'))
+            self.openCom.config(text = "Disconnect")
+        else:
+            self.ser.close()
+            self.openCom.config(text = "Connect")
     def quit(self):
         self.frame.quit()
 
